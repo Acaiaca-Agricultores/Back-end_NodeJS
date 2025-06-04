@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  mongodb_container:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+  apinodejs:
+    build: .
+    container_name: apinodejs
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 3001:3000
+    depends_on:
+      - mongodb_container
+    environment:
+      MONGO_URI: mongodb://root:password@mongodb_container:27017/
+volumes:
+  mongodb_data_container:
