@@ -34,6 +34,11 @@ export async function register(req, res) {
             phoneNumber,
         });
         await user.save();
+        // Gera token após cadastro
+        const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+            expiresIn: process.env.JWT_EXPIRES_IN,
+            algorithm: "HS256",
+        });
         res.status(201).json({
             msg: "Usuário criado com sucesso!",
             id: user._id,
@@ -46,7 +51,9 @@ export async function register(req, res) {
             stateName: user.stateName,
             imageProfile: user.imageProfile,
             createdAt: user.createdAt,
-            updatedAt: user.updatedAt
+            updatedAt: user.updatedAt,
+            token,
+            expiresIn: process.env.JWT_EXPIRES_IN
         });
     } catch (err) {
         if (err.name === "ValidationError") {
