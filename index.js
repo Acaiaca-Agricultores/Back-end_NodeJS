@@ -7,8 +7,8 @@ import userRoutes from "./scr/routes/userRoutes.js";
 const app = express();
 
 connectDB();
-
-app.use(cors());
+const allowedOrigin = process.env.CORS_ORIGIN;
+app.use(cors({ origin: allowedOrigin }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 

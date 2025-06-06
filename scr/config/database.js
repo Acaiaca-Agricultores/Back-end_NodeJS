@@ -3,10 +3,13 @@ import mongoose from "mongoose";
 export default async function connectDB() {
     const dbUser = process.env.DB_USER;
     const dbPassword = process.env.DB_PASS;
-    const dbName = process.env.DB_NAME
-    const dbCluster = process.env.DB_CLUSTER
+    const dbName = process.env.DB_NAME;
+    const dbCluster = process.env.DB_CLUSTER;
     try {
-        await mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}${dbCluster}.mongodb.net/${dbName}`);
+        const clusterHost = dbCluster.startsWith('@') ? dbCluster.slice(1) : dbCluster;
+        await mongoose.connect(
+            `mongodb+srv://${dbUser}:${dbPassword}@${clusterHost}.mongodb.net/${dbName}`
+        );
         console.log("Connected to MongoDB");
         try {
             const collection = mongoose.connection.db.collection("users");
