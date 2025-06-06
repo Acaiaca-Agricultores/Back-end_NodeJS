@@ -34,7 +34,6 @@ export async function register(req, res) {
             phoneNumber,
         });
         await user.save();
-        // Gera token após cadastro
         const token = jwt.sign({ id: user._id }, process.env.SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
             algorithm: "HS256",
@@ -139,7 +138,8 @@ export async function editUser(req, res) {
         return res.status(403).json({ msg: "Acesso não autorizado." });
     }
     try {
-        const { username, email, propertyName, cityName, stateName } = req.body;
+        const { username, email, propertyName, cityName, stateName, phoneNumber, phone } = req.body;
+        const newPhoneNumber = phoneNumber ?? phone;
         let updateData = {
             username,
             email,
@@ -148,6 +148,9 @@ export async function editUser(req, res) {
             stateName,
             updatedAt: new Date()
         };
+        if (newPhoneNumber !== undefined) {
+            updateData.phoneNumber = newPhoneNumber;
+        }
         if (req.file) {
             updateData.imageProfile = `/uploads/${req.file.filename}`;
         }
@@ -161,5 +164,35 @@ export async function editUser(req, res) {
         }
         console.error(error);
         res.status(500).json({ msg: "Erro ao atualizar perfil. Tente novamente mais tarde." });
+    }
+}
+
+export async function changePassword(req, res) {
+    const userId = req.params.id;
+    if (userId !== req.userId) {
+        return res.status(403).json({ msg: "Acesso não autorizado." });
+    }
+    try {
+        const { oldPassword, newPassword, confirmPassword } = req.body;
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            return res.status(422).json({ msg: "Todos os campos são obrigatórios." });
+        }
+        if (newPassword !== confirmPassword) {
+            return res.status(422).json({ msg: "As novas senhas não conferem." });
+        }
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ msg: "Usuário não encontrado." });
+        const match = await bcrypt.compare(oldPassword, user.password);
+        if (!match) {
+            return res.status(400).json({ msg: "Senha antiga incorreta." });
+        }
+        const hashed = await bcrypt.hash(newPassword, await bcrypt.genSalt(12));
+        user.password = hashed;
+        user.updatedAt = new Date();
+        await user.save();
+        res.status(200).json({ msg: "Senha atualizada com sucesso!" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao atualizar senha. Tente novamente mais tarde." });
     }
 }

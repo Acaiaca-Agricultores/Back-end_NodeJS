@@ -4,10 +4,10 @@ export default async function connectDB() {
     const dbUser = process.env.DB_USER;
     const dbPassword = process.env.DB_PASS;
     const dbName = process.env.DB_NAME
+    const dbCluster = process.env.DB_CLUSTER
     try {
-        await mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.dsfgq3p.mongodb.net/${dbName}`);
+        await mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}${dbCluster}.mongodb.net/${dbName}`);
         console.log("Connected to MongoDB");
-        // Remover índice 'id_1' se existir
         try {
             const collection = mongoose.connection.db.collection("users");
             const indexes = await collection.indexes();
