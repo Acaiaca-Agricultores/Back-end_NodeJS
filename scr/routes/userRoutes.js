@@ -5,6 +5,11 @@ import { upload } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
+router.get('/', (_req, res) => {
+  return res.status(200).json({
+    msg: 'API de gerenciamento de usuários: registro, login, perfil, edição, exclusão e alteração de senha.'
+  });
+});
 router.post("/auth/register", register);
 router.post("/auth/login", login);
 router.get("/user/:id", checkToken, getUser);

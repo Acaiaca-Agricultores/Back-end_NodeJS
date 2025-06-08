@@ -12,7 +12,12 @@ app.use(cors({ origin: allowedOrigin }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-app.use(userRoutes);
+app.get('/', (_req, res) => {
+    return res.status(200).json({
+        msg: 'API de gerenciamento de usuários: permite registro, login, visualização, edição, exclusão de perfis e alteração de senha.'
+    });
+});
+app.use('/', userRoutes);
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
