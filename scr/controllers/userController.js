@@ -196,3 +196,52 @@ export async function changePassword(req, res) {
         res.status(500).json({ msg: "Erro ao atualizar senha. Tente novamente mais tarde." });
     }
 }
+
+export async function getUserByEmail(req, res) {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(422).json({ msg: "Email é obrigatório." });
+        }
+        const user = await User.findOne({ email }, '-password');
+        if (!user) {
+            return res.status(404).json({ msg: "Usuário não encontrado." });
+        }
+        res.status(200).json({
+            user: {
+                _id: user._id,
+                email: user.email,
+                updatedAt: user.updatedAt
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao buscar usuário por email." });
+    }
+}
+
+export async function resetPassword(req, res) {
+    try {
+        const userId = req.params.id;
+        const { newPassword, confirmPassword } = req.body;
+        if (!userId || !newPassword || !confirmPassword) {
+            return res.status(422).json({ msg: "Senhas são obrigatórios." });
+        }
+        if (newPassword !== confirmPassword) {
+            return res.status(422).json({ msg: "As senhas não conferem." });
+        }
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ msg: "Usuário não encontrado." });
+        }
+        const hashed = await bcrypt.hash(newPassword, await bcrypt.genSalt(12));
+        user.password = hashed;
+        user.updatedAt = new Date();
+        await user.save();
+        res.status(200).json({ msg: "Senha redefinida com sucesso!" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao redefinir senha. Tente novamente mais tarde." });
+    }
+}
+
