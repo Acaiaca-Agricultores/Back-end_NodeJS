@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import userRoutes from "./scr/routes/userRoutes.js";
+import Routes from "./scr/routes/Routes.js";
 
 dotenv.config();
 
@@ -16,6 +16,6 @@ app.use("/uploads", express.static("uploads"));
 
 app.get("/", (_, res) => res.status(200).json({ msg: "Welcome to the API" }));
 
-app.use("/", userRoutes);
+app.use("/", Routes);
 
 export default app;

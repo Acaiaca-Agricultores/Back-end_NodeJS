@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Product from "../models/Product.js";
 
 export async function register(req, res) {
     try {
@@ -109,6 +110,7 @@ export async function getUser(req, res) {
             stateName: user.stateName,
             phoneNumber: user.phoneNumber,
             imageProfile: user.imageProfile,
+            Products: user.Products,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt
         }
@@ -245,3 +247,21 @@ export async function resetPassword(req, res) {
     }
 }
 
+export async function getAgricultores(req, res) {
+    try {
+        const agricultores = await User.find({ role: "agricultor" }, "-password");
+        if (agricultores.length === 0) {
+            return res.status(404).json({ msg: "Nenhum agricultor encontrado." });
+        }
+        const agricultoresWithProducts = await Promise.all(
+            agricultores.map(async (user) => {
+                const products = await Product.find({ userId: user._id });
+                return { ...user.toObject(), products };
+            })
+        );
+        res.status(200).json(agricultoresWithProducts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao buscar agricultores. Tente novamente mais tarde." });
+    }
+}
