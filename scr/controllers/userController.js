@@ -19,29 +19,27 @@ export async function register(req, res) {
         if (role === "agricultor" && !propertyName) {
             return res.status(422).json({ msg: "O nome da propriedade é obrigatório para agricultores." });
         }
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ where: { email } });
         if (userExists) return res.status(422).json({ msg: "Este email já está cadastrado." });
 
         const passwordHash = await bcrypt.hash(password, await bcrypt.genSalt(12));
-        const user = new User({
+        const user = await User.create({
             username,
             email,
             password: passwordHash,
-            confirmpassword: passwordHash,
             role,
             propertyName,
             cityName: city,
             stateName: state,
             phoneNumber,
         });
-        await user.save();
-        const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+        const token = jwt.sign({ id: user.id }, process.env.SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
             algorithm: "HS256",
         });
         res.status(201).json({
             msg: "Usuário criado com sucesso!",
-            id: user._id,
+            id: user.id,
             username: user.username,
             email: user.email,
             role: user.role,
@@ -73,12 +71,12 @@ export async function login(req, res) {
         if (!email || !password || !role) {
             return res.status(422).json({ msg: "Todos os campos são obrigatórios." });
         }
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ where: { email } });
         if (!user) return res.status(404).json({ msg: "Usuário não encontrado." });
         if (user.role !== role) return res.status(403).json({ msg: "Tipo de usuário inválido." });
         const checkPassword = await bcrypt.compare(password, user.password);
         if (!checkPassword) return res.status(422).json({ msg: "Senha inválida." });
-        const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+        const token = jwt.sign({ id: user.id }, process.env.SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
             algorithm: "HS256",
         });
@@ -87,7 +85,7 @@ export async function login(req, res) {
             token,
             username: user.username,
             role: user.role,
-            userId: user._id,
+            userId: user.id,
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
     } catch (error) {
@@ -97,11 +95,11 @@ export async function login(req, res) {
 }
 
 export async function getUser(req, res) {
-    const user = await User.findById(req.params.id, "-password");
+    const user = await User.findByPk(req.params.id, { attributes: { exclude: ['password'] } });
     if (!user) return res.status(404).json({ msg: "Usuário não encontrado." });
     res.status(200).json({
         user: {
-            _id: user._id,
+            id: user.id,
             username: user.username,
             email: user.email,
             role: user.role,
@@ -118,19 +116,21 @@ export async function getUser(req, res) {
 }
 
 export async function deleteUser(req, res) {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ msg: "Usuário não encontrado." });
-
-    if (user._id.toString() !== req.userId) {
-        return res.status(403).json({ msg: "Acesso não autorizado." });
-    }
-
     try {
-        await User.findByIdAndDelete(req.params.id);
-        res.status(200).json({ msg: "Usuário deletado com sucesso." });
+        const user = await User.findByPk(req.params.id);
+        if (!user) return res.status(404).json({ msg: "Usuário não encontrado." });
+
+        if (user.id !== req.userId) {
+            return res.status(403).json({ msg: "Acesso não autorizado." });
+        }
+
+        // Deleta todos os produtos do usuário antes de deletar o usuário
+        await Product.destroy({ where: { userId: req.params.id } });
+        await User.destroy({ where: { id: req.params.id } });
+        return res.status(200).json({ msg: "Usuário e produtos deletados com sucesso." });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ msg: "Erro ao deletar usuário." });
+        return res.status(500).json({ msg: "Erro interno ao deletar usuário." });
     }
 }
 
@@ -154,10 +154,11 @@ export async function editUser(req, res) {
             updateData.phoneNumber = newPhoneNumber;
         }
         if (req.file) {
-            updateData.imageProfile = `/uploads/${req.file.filename}`;
+            updateData.imageProfile = `/uploads/profiles/${req.file.filename}`;
         }
         Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
-        const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+        let user = await User.findByPk(userId);
+        await user.update(updateData);
         if (!user) return res.status(404).json({ msg: "Usuário não encontrado." });
         res.status(200).json({ msg: "Perfil atualizado com sucesso!", user });
     } catch (error) {
@@ -182,16 +183,14 @@ export async function changePassword(req, res) {
         if (newPassword !== confirmPassword) {
             return res.status(422).json({ msg: "As novas senhas não conferem." });
         }
-        const user = await User.findById(userId);
+        const user = await User.findByPk(userId);
         if (!user) return res.status(404).json({ msg: "Usuário não encontrado." });
         const match = await bcrypt.compare(oldPassword, user.password);
         if (!match) {
             return res.status(400).json({ msg: "Senha antiga incorreta." });
         }
         const hashed = await bcrypt.hash(newPassword, await bcrypt.genSalt(12));
-        user.password = hashed;
-        user.updatedAt = new Date();
-        await user.save();
+        await user.update({ password: hashed, updatedAt: new Date() });
         res.status(200).json({ msg: "Senha atualizada com sucesso!" });
     } catch (error) {
         console.error(error);
@@ -205,13 +204,13 @@ export async function getUserByEmail(req, res) {
         if (!email) {
             return res.status(422).json({ msg: "Email é obrigatório." });
         }
-        const user = await User.findOne({ email }, '-password');
+        const user = await User.findOne({ where: { email } }, '-password');
         if (!user) {
             return res.status(404).json({ msg: "Usuário não encontrado." });
         }
         res.status(200).json({
             user: {
-                _id: user._id,
+                id: user.id,
                 email: user.email,
                 updatedAt: user.updatedAt
             }
@@ -232,14 +231,12 @@ export async function resetPassword(req, res) {
         if (newPassword !== confirmPassword) {
             return res.status(422).json({ msg: "As senhas não conferem." });
         }
-        const user = await User.findById(userId);
+        const user = await User.findByPk(userId);
         if (!user) {
             return res.status(404).json({ msg: "Usuário não encontrado." });
         }
         const hashed = await bcrypt.hash(newPassword, await bcrypt.genSalt(12));
-        user.password = hashed;
-        user.updatedAt = new Date();
-        await user.save();
+        await user.update({ password: hashed, updatedAt: new Date() });
         res.status(200).json({ msg: "Senha redefinida com sucesso!" });
     } catch (error) {
         console.error(error);
@@ -249,14 +246,14 @@ export async function resetPassword(req, res) {
 
 export async function getAgricultores(req, res) {
     try {
-        const agricultores = await User.find({ role: "agricultor" }, "-password");
+        const agricultores = await User.findAll({ where: { role: "agricultor" }, attributes: { exclude: ['password'] } });
         if (agricultores.length === 0) {
             return res.status(404).json({ msg: "Nenhum agricultor encontrado." });
         }
         const agricultoresWithProducts = await Promise.all(
             agricultores.map(async (user) => {
-                const products = await Product.find({ userId: user._id });
-                return { ...user.toObject(), products };
+                const products = await Product.findAll({ where: { userId: user.id } });
+                return { ...user.get({ plain: true }), products };
             })
         );
         res.status(200).json(agricultoresWithProducts);

@@ -1,22 +1,28 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/database.js";
 
-const UserSchema = new mongoose.Schema(
+const User = sequelize.define(
+  "User",
   {
-    imageProfile: { type: String, default: "" },
-    username: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: ["agricultor", "consumidor"], required: true },
-    propertyName: { type: String, if: { $ne: "consumidor" }, required: true },
-    cityName: { type: String, required: true },
-    stateName: { type: String, required: true },
-    phoneNumber: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
+    id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+    imageProfile: { type: DataTypes.STRING, defaultValue: "" },
+    username: { type: DataTypes.STRING, allowNull: false },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: { isEmail: true },
+    },
+    password: { type: DataTypes.STRING, allowNull: false },
+    role: { type: DataTypes.ENUM("agricultor", "consumidor"), allowNull: false },
+    propertyName: { type: DataTypes.STRING, allowNull: true },
+    cityName: { type: DataTypes.STRING, allowNull: false },
+    stateName: { type: DataTypes.STRING, allowNull: false },
+    phoneNumber: { type: DataTypes.STRING, allowNull: false },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
-
-const User = mongoose.model("User", UserSchema);
 
 export default User;

@@ -1,29 +1,27 @@
-import mongoose from "mongoose";
+import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
+dotenv.config();
+
+const sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASS,
+    {
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        dialect: 'postgres',
+        logging: false,
+    }
+);
 
 export default async function connectDB() {
-    const dbUser = process.env.DB_USER;
-    const dbPassword = process.env.DB_PASS;
-    const dbName = process.env.DB_NAME;
-    const dbCluster = process.env.DB_CLUSTER;
     try {
-        const clusterHost = dbCluster.startsWith('@') ? dbCluster.slice(1) : dbCluster;
-        await mongoose.connect(
-            `mongodb+srv://${dbUser}:${dbPassword}@${clusterHost}.mongodb.net/${dbName}`
-        );
-        console.log("Connected to MongoDB");
-        try {
-            const collection = mongoose.connection.db.collection("users");
-            const indexes = await collection.indexes();
-            const idIndex = indexes.find((i) => i.name === "id_1");
-            if (idIndex) {
-                await collection.dropIndex("id_1");
-                console.log("Índice 'id_1' removido com sucesso.");
-            }
-        } catch (error) {
-            console.error("Erro ao remover índice 'id_1':", error);
-        }
-    } catch (err) {
-        console.error("Erro na conexão com o MongoDB:", err);
-        throw err;
+        await sequelize.authenticate();
+        console.log('Connected to PostgreSQL');
+    } catch (error) {
+        console.error('Error connecting to PostgreSQL:', error);
+        throw error;
     }
 }
+
+export { sequelize };

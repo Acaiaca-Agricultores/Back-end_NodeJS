@@ -1,18 +1,24 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/database.js";
+import User from "./User.js";
 
-const ProductSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    category: { type: String, required: true, enum: ["Fruta", "Verdura", "Legume"], lowercase: true, trim: true },
-    quantity: { type: Number, required: true },
-    price: { type: Number, required: true },
-    image: { type: String, required: true },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+const Product = sequelize.define("Product", {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true
   },
-  { timestamps: true }
-);
+  userId: { type: DataTypes.UUID, allowNull: false },
+  name: { type: DataTypes.STRING, allowNull: false },
+  description: { type: DataTypes.TEXT, allowNull: false },
+  category: { type: DataTypes.ENUM("Fruta", "Verdura", "Legume"), allowNull: false },
+  quantity: { type: DataTypes.INTEGER, allowNull: false },
+  price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+  image: { type: DataTypes.STRING, allowNull: false }
+}, {
+  timestamps: true,
+});
 
-const Product = mongoose.model("Product", ProductSchema);
+Product.belongsTo(User, { foreignKey: 'userId' });
 
 export default Product;
