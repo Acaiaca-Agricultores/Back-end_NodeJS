@@ -187,3 +187,24 @@ export async function getAllProductsByUserId(req, res) {
         res.status(500).json({ msg: "Erro ao buscar produtos do usuário. Tente novamente mais tarde." });
     }
 }
+
+export async function getProductById(req, res) {
+    const productId = req.params.id;
+    if (!productId) {
+        return res.status(422).json({ msg: "ID do produto é obrigatório." });
+    }
+    try {
+        const product = await Product.findByPk(productId, {
+            include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile"] }
+        });
+        if (!product) {
+            return res.status(404).json({ msg: "Produto não encontrado." });
+        }
+        const productData = product.toJSON();
+        productData.image = getProductImageUrl(productData.image);
+        res.status(200).json(productData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao buscar produto. Tente novamente mais tarde." });
+    }
+}
