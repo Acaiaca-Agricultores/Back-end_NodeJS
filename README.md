@@ -15,13 +15,13 @@ Este back‑end serve o Front‑end React e pode ser usado também como base par
 
 ## 💻 Tecnologias utilizadas
 
-- **Node.js** – ambiente de execução JavaScript.
-- **Express** – framework para criação de rotas e middlewares.
-- **Banco de dados** – (ex.: MongoDB / PostgreSQL). 📌 especifique qual.
-- **ORM / Driver** – ex: Mongoose, Sequelize, TypeORM (especifique).
-- **JWT** – autenticação baseada em token.
-- **Dotenv** – tratamento de variáveis de ambiente.
-- Outras dependências: body-parser, cors, helmet etc.
+- ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white) **Node.js** – ambiente de execução JavaScript.
+- ![Express](https://img.shields.io/badge/Express.js-000000?style=flat&logo=express&logoColor=white) **Express** – framework para criação de rotas e middlewares.
+- ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white) **PostgreSQL** – sistema de gerenciamento de banco de dados relacional.
+- ![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=flat&logo=sequelize&logoColor=white) **Sequelize** – ORM para Node.js com suporte a PostgreSQL.
+- ![JWT](https://img.shields.io/badge/JWT-000000?style=flat&logo=JSON%20web%20tokens&logoColor=white) **JWT** – autenticação baseada em token.
+- ![Dotenv](https://img.shields.io/badge/Dotenv-ECD53F?style=flat&logo=dotenv&logoColor=black) **Dotenv** – tratamento de variáveis de ambiente.
+- ![CORS](https://img.shields.io/badge/CORS-4B32C3?style=flat&logo=javascript&logoColor=white) **CORS**, ![Helmet](https://img.shields.io/badge/Helmet.js-000000?style=flat&logo=helmet&logoColor=white), ![Body-parser](https://img.shields.io/badge/Body--parser-gray?style=flat&logo=javascript&logoColor=white) – outras dependências úteis para segurança e parsing de dados.
 
 ## ⚙️ Instalação
 
