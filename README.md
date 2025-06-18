@@ -1,6 +1,6 @@
 # API Acaiaca Agricultores - Back-end Node.js
 
-Bem-vindo ao repositório do back-end da API Acaiaca Agricultores! Este projeto é uma API RESTful desenvolvida com Node.js e Express, projetada para gerenciar usuários (agricultores e consumidores) e produtos agrícolas. Ele integra autenticação JWT, upload de arquivos e persistência de dados em um banco de dados PostgreSQL.
+Bem-vindo ao repositório do back-end da API Acaiaca Agricultores! Este projeto é uma API RESTful desenvolvida com Node.js e Express, utilizando Sequelize para a comunicação com um banco de dados PostgreSQL e Mongoose para um banco de dados MongoDB. Ele oferece funcionalidades para gerenciamento de usuários (agricultores e consumidores) e produtos agrícolas. As rotas são protegidas por autenticação JWT e incluem upload de imagens.
 
 <img src="img-readme-backend/25500F.png" alt="Logo do Projeto Acaiaca Agricultores">
 
@@ -49,18 +49,22 @@ Esta API serve como o coração do sistema Acaiaca Agricultores, permitindo que 
 
 ## Tecnologias Utilizadas
 
-* **Node.js**: Plataforma de tempo de execução JavaScript.
-* **Express.js**: Framework web para Node.js.
-* **Sequelize**: ORM (Object-Relational Mapper) para Node.js, utilizado para interagir com o banco de dados PostgreSQL.
-* **PostgreSQL**: Banco de dados relacional robusto e de código aberto.
-* **Mongoose**: ORM para MongoDB (presente no `package.json`, mas o código indica PostgreSQL para `Product` e `User`).
-* **Bcrypt**: Biblioteca para hash de senhas.
-* **JSON Web Token (JWT)**: Para autenticação baseada em token.
-* **Multer**: Middleware para lidar com `multipart/form-data`, usado para upload de arquivos.
-* **Dotenv**: Para carregar variáveis de ambiente de um arquivo `.env`.
-* **Cors**: Middleware Express para habilitar o CORS (Cross-Origin Resource Sharing).
-* **Nodemon**: Ferramenta que ajuda no desenvolvimento de aplicativos Node.js reiniciando automaticamente o servidor quando alterações nos arquivos são detectadas (somente em desenvolvimento).
-* **Docker & Docker Compose**: Para conteinerização e orquestração dos serviços da aplicação e do banco de dados.
+Aqui estão as principais tecnologias utilizadas no desenvolvimento deste projeto:
+
+| Categoria      | Tecnologia | Descrição                                        | Imagem                                       |
+| :------------- | :--------- | :----------------------------------------------- | :------------------------------------------- |
+| **Backend** | Node.js    | Plataforma de tempo de execução JavaScript.      | ![Node.js](img-readme-backend/technologies/nodejs.png)    |
+|                | Express.js | Framework web minimalista para Node.js.          | ![Express.js](img-readme-backend/technologies/express.png) |
+| **Banco de Dados** | PostgreSQL | Banco de dados relacional robusto.           | ![PostgreSQL](img-readme-backend/technologies/postgresql.png) |
+|                | Sequelize  | ORM para Node.js, para PostgreSQL.              | ![Sequelize](img-readme-backend/technologies/sequelize.png) |
+|                | Mongoose   | ORM para MongoDB (para futura expansão).        | ![Mongoose](img-readme-backend/technologies/mongoose.png)  |
+| **Autenticação** | JWT       | Tokens Web JSON para autenticação segura.        | ![JWT](img-readme-backend/technologies/jwt.png)            |
+|                | Bcrypt     | Biblioteca para hash de senhas.                  | ![Bcrypt](img-readme-backend/technologies/bcrypt.png)      |
+| **Uploads** | Multer     | Middleware para lidar com `multipart/form-data`. | ![Multer](img-readme-backend/technologies/multer.png)      |
+| **Variáveis de Ambiente** | Dotenv | Para carregar variáveis de ambiente.         | ![Dotenv](img-readme-backend/technologies/dotenv.png)      |
+| **Desenvolvimento** | Nodemon  | Reinicia o servidor em alterações de arquivo.   | ![Nodemon](img-readme-backend/technologies/nodemon.png)    |
+| **Conteinerização** | Docker     | Plataforma para desenvolver, enviar e executar apps. | ![Docker](img-readme-backend/technologies/docker.png)      |
+|                | Docker Compose | Ferramenta para definir e executar apps Docker. | ![Docker Compose](img-readme-backend/technologies/docker-compose.png) |
 
 ## Configuração do Ambiente
 
