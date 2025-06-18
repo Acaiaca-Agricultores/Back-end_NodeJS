@@ -1,5 +1,3 @@
-<img src="img-readme-backend/25500F.png">
-
 # API Acaiaca Agricultores - Back-end Node.js
 
 Bem-vindo ao repositório do back-end da API Acaiaca Agricultores! Este projeto é uma API RESTful desenvolvida com Node.js e Express, projetada para gerenciar usuários (agricultores e consumidores) e produtos agrícolas. Ele integra autenticação JWT, upload de arquivos e persistência de dados em um banco de dados PostgreSQL.
