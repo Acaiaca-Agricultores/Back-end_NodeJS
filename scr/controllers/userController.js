@@ -5,7 +5,7 @@ import Product from "../models/Product.js";
 
 export async function register(req, res) {
     try {
-        const { username, email, password, confirmpassword, role, propertyName, city, state, phoneNumber } = req.body;
+        const { username, email, password, confirmpassword, role, propertyName, city, state, phoneNumber, historia } = req.body;
 
         if (!username || !email || !password || !confirmpassword || !role || !city || !state) {
             return res.status(422).json({ msg: "Todos os campos obrigatórios devem ser preenchidos." });
@@ -32,6 +32,7 @@ export async function register(req, res) {
             cityName: city,
             stateName: state,
             phoneNumber,
+            historia,
         });
         const token = jwt.sign({ id: user.id }, process.env.SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
@@ -47,6 +48,7 @@ export async function register(req, res) {
             propertyName: user.propertyName,
             cityName: user.cityName,
             stateName: user.stateName,
+            historia: user.historia,
             imageProfile: user.imageProfile,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
@@ -86,6 +88,7 @@ export async function login(req, res) {
             username: user.username,
             role: user.role,
             userId: user.id,
+            historia: user.historia,
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
     } catch (error) {
@@ -107,6 +110,7 @@ export async function getUser(req, res) {
             cityName: user.cityName,
             stateName: user.stateName,
             phoneNumber: user.phoneNumber,
+            historia: user.historia,
             imageProfile: user.imageProfile,
             Products: user.Products,
             createdAt: user.createdAt,
@@ -140,7 +144,7 @@ export async function editUser(req, res) {
         return res.status(403).json({ msg: "Acesso não autorizado." });
     }
     try {
-        const { username, email, propertyName, cityName, stateName, phoneNumber, phone } = req.body;
+        const { username, email, propertyName, cityName, stateName, phoneNumber, phone, historia } = req.body;
         const newPhoneNumber = phoneNumber ?? phone;
         let updateData = {
             username,
@@ -148,6 +152,7 @@ export async function editUser(req, res) {
             propertyName,
             cityName,
             stateName,
+            historia,
             updatedAt: new Date()
         };
         if (newPhoneNumber !== undefined) {
@@ -246,14 +251,20 @@ export async function resetPassword(req, res) {
 
 export async function getAgricultores(req, res) {
     try {
-        const agricultores = await User.findAll({ where: { role: "agricultor" }, attributes: { exclude: ['password'] } });
+        const agricultores = await User.findAll({ 
+            where: { role: "agricultor" }, 
+            attributes: { exclude: ['password'] } 
+        });
         if (agricultores.length === 0) {
             return res.status(404).json({ msg: "Nenhum agricultor encontrado." });
         }
         const agricultoresWithProducts = await Promise.all(
             agricultores.map(async (user) => {
                 const products = await Product.findAll({ where: { userId: user.id } });
-                return { ...user.get({ plain: true }), products };
+                return { 
+                    ...user.get({ plain: true }), 
+                    products 
+                };
             })
         );
         res.status(200).json(agricultoresWithProducts);

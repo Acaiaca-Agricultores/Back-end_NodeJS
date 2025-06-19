@@ -80,7 +80,7 @@ export async function getProductsByUser(req, res) {
     }
     try {
         const product = await Product.findByPk(productId, {
-            include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile"] }
+            include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile", "historia"] }
         });
         if (!product) {
             return res.status(404).json({ msg: "Produto não encontrado." });
@@ -97,7 +97,7 @@ export async function getProductsByUser(req, res) {
 export async function getAllProducts(req, res) {
     try {
         const products = await Product.findAll({
-            include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile"] }
+            include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile", "historia"] }
         });
         if (products.length === 0) {
             return res.status(404).json({ msg: "Nenhum produto encontrado." });
@@ -231,7 +231,7 @@ export async function getProductById(req, res) {
     }
     try {
         const product = await Product.findByPk(productId, {
-            include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile"] }
+            include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile", "historia"] }
         });
         if (!product) {
             return res.status(404).json({ msg: "Produto não encontrado." });

@@ -19,6 +19,7 @@ const User = sequelize.define(
     cityName: { type: DataTypes.STRING, allowNull: false },
     stateName: { type: DataTypes.STRING, allowNull: false },
     phoneNumber: { type: DataTypes.STRING, allowNull: false },
+    historia: { type: DataTypes.TEXT, allowNull: true },
   },
   {
     timestamps: true,
