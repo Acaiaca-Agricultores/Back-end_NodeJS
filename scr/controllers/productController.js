@@ -18,10 +18,26 @@ export async function registerProduct(req, res) {
         const { name, description, category: rawCategory } = req.body;
         const quantity = Number(req.body.quantity);
         const price = Number(req.body.price);
-        const categoryMap = { fruta: 'Fruta', verdura: 'Verdura', legume: 'Legume' };
+        
+        const categoryMap = {
+            agricultores: 'Agricultores',
+            frutas: 'Frutas',
+            verduras: 'Verduras',
+            legumes: 'Legumes',
+            tuberculos: 'Tubérculos',
+            graos: 'Grãos',
+            oleaginosas: 'Oleaginosas',
+            temperos: 'Temperos',
+            chas: 'Chás',
+            mel: 'Mel',
+            ovos: 'Ovos',
+            laticinios: 'Laticínios'
+        };
+        
         const categoryKey = typeof rawCategory === 'string' ? rawCategory.trim().toLowerCase() : '';
         const category = categoryMap[categoryKey];
         const bodyImage = req.body.image;
+        
         if (!name || !description || !quantity || !category || price == null) {
             return res.status(422).json({ msg: "Todos os campos são obrigatórios, incluindo categoria e preço." });
         } else if (isNaN(quantity) || quantity <= 0) {
@@ -29,22 +45,24 @@ export async function registerProduct(req, res) {
         } else if (name.length < 3 || description.length < 10) {
             return res.status(422).json({ msg: "Nome do produto deve ter pelo menos 3 caracteres e descrição pelo menos 10." });
         } else if (!category) {
-            return res.status(422).json({ msg: "Categoria inválida. Deve ser 'Fruta', 'Verdura' ou 'Legume'." });
+            return res.status(422).json({ msg: "Categoria inválida. Categorias válidas: Agricultores, Frutas, Verduras, Legumes, Tubérculos, Grãos, Oleaginosas, Temperos, Chás, Mel, Ovos, Laticínios." });
         } else if (isNaN(price) || price <= 0) {
             return res.status(422).json({ msg: "Preço deve ser numérico e maior que zero." });
         } else if (!isUuid(req.userId)) {
             return res.status(400).json({ msg: "ID de usuário inválido. Faça login novamente." });
         }
+        
         const imagePath = req.file ? `/uploads/products/${req.file.filename}` : bodyImage;
         if (!imagePath) {
             return res.status(422).json({ msg: "Foto do produto é obrigatória." });
         }
+        
         const product = await Product.create({
             name,
             description,
             category,
-            quantity, // já convertido para número
-            price,    // já convertido para número
+            quantity,
+            price,
             image: imagePath,
             userId: req.userId
         });
@@ -103,11 +121,26 @@ export async function editProduct(req, res) {
     }
     try {
         const { name, description, quantity, category: rawCategory, price } = req.body;
-        // Replace category normalization with mapping to enum values
-        const categoryMap = { fruta: 'Fruta', verdura: 'Verdura', legume: 'Legume' };
+        
+        const categoryMap = {
+            agricultores: 'Agricultores',
+            frutas: 'Frutas',
+            verduras: 'Verduras',
+            legumes: 'Legumes',
+            tuberculos: 'Tubérculos',
+            graos: 'Grãos',
+            oleaginosas: 'Oleaginosas',
+            temperos: 'Temperos',
+            chas: 'Chás',
+            mel: 'Mel',
+            ovos: 'Ovos',
+            laticinios: 'Laticínios'
+        };
+        
         const categoryKey = typeof rawCategory === 'string' ? rawCategory.trim().toLowerCase() : '';
         const category = categoryMap[categoryKey];
         const bodyImage = req.body.image;
+        
         if (!name || !description || !quantity || !category || price == null) {
             return res.status(422).json({ msg: "Todos os campos são obrigatórios, incluindo categoria e preço." });
         } else if (quantity <= 0) {
@@ -117,20 +150,23 @@ export async function editProduct(req, res) {
         } else if (name.length < 3 || description.length < 10) {
             return res.status(422).json({ msg: "Nome do produto deve ter pelo menos 3 caracteres e descrição pelo menos 10." });
         } else if (!category) {
-            return res.status(422).json({ msg: "Categoria inválida. Deve ser 'Fruta', 'Verdura' ou 'Legume'." });
+            return res.status(422).json({ msg: "Categoria inválida. Categorias válidas: Agricultores, Frutas, Verduras, Legumes, Tubérculos, Grãos, Oleaginosas, Temperos, Chás, Mel, Ovos, Laticínios." });
         } else if (typeof price !== "number") {
             return res.status(422).json({ msg: "Preço deve ser numérico." });
         } else if (price <= 0) {
             return res.status(422).json({ msg: "Preço deve ser maior que zero." });
         }
+        
         const imagePath = req.file ? `/uploads/products/${req.file.filename}` : bodyImage;
         if (!imagePath) {
             return res.status(422).json({ msg: "Foto do produto é obrigatória." });
         }
+        
         const product = await Product.findByPk(productId);
         if (!product) {
             return res.status(404).json({ msg: "Produto não encontrado." });
         }
+        
         product.name = name;
         product.description = description;
         product.category = category;
