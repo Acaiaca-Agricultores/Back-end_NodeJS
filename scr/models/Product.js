@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
-import User from "./User.js";
 
 const Product = sequelize.define("Product", {
   id: {
@@ -34,7 +33,5 @@ const Product = sequelize.define("Product", {
 }, {
   timestamps: true,
 });
-
-Product.belongsTo(User, { foreignKey: 'userId' });
 
 export default Product;

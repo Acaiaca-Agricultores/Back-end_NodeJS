@@ -261,7 +261,9 @@ export async function editProduct(req, res) {
     }
 
     try {
-        const { name, description, quantity, category: rawCategory, price } = req.body;
+        let { name, description, quantity, category: rawCategory, price } = req.body;
+        quantity = Number(quantity);
+        price = Number(price);
 
         const categoryMap = {
             agricultores: 'Agricultores',
