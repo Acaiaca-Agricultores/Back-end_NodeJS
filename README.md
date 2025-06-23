@@ -40,7 +40,7 @@ Essa estrutura facilita a manutenção, testes e escalabilidade da aplicação.
 
 Este é o modelo relacional das principais tabelas do PostgreSQL usado na aplicação:
 
-````dbdiagram
+```dbdiagram
 Table users {
   id uuid [pk, default: `gen_random_uuid()`]
   image_profile varchar
@@ -69,6 +69,7 @@ Table orders {
   status enum('pendente', 'confirmado', 'entregue', 'cancelado')
   created_at timestamp
 }
+```
 
 <img src="img-readme-backend/db-plataforma-acaiaca.svg" alt="Imagem do diagrama">
 
