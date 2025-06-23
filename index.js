@@ -3,6 +3,7 @@ import cors from "cors";
 import 'dotenv/config';
 import connectDB, { sequelize } from "./scr/config/database.js";
 import Routes from "./scr/routes/Routes.js";
+import "./scr/models/associations.js";
 
 const app = express();
 

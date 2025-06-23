@@ -1,6 +1,7 @@
 import Product from "../models/Product.js";
 import User from "../models/User.js";
 import { validate as isUuid } from 'uuid';
+import { validateUUID } from "../utils/validation.js";
 
 function getProductImageUrl(image) {
     if (!image) return null;
@@ -163,67 +164,14 @@ export async function registerProduct(req, res) {
     }
 }
 
-export async function getProductsByUser(req, res) {
-    const productId = req.params.id;
-
-    if (!productId) {
-        return res.status(400).json({
-            success: false,
-            msg: "ID do produto é obrigatório.",
-            field: 'productId'
-        });
-    }
-
-    try {
-        const product = await Product.findByPk(productId, {
-            include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile", "historia"] }
-        });
-
-        if (!product) {
-            return res.status(404).json({
-                success: false,
-                msg: "Produto não encontrado.",
-                productId: productId
-            });
-        }
-
-        const productData = product.toJSON();
-        productData.image = getProductImageUrl(productData.image);
-
-        res.status(200).json({
-            success: true,
-            product: productData
-        });
-    } catch (error) {
-        console.error('Erro ao buscar produto:', error);
-
-        // Tratamento para IDs inválidos
-        if (error.name === 'SequelizeDatabaseError' && error.message.includes('invalid input syntax')) {
-            return res.status(400).json({
-                success: false,
-                msg: "ID do produto inválido.",
-                productId: productId
-            });
-        }
-
-        res.status(500).json({
-            success: false,
-            msg: "Erro interno do servidor ao buscar produto. Tente novamente mais tarde.",
-            error: 'INTERNAL_SERVER_ERROR'
-        });
-    }
-}
-
 export async function getAllProducts(req, res) {
     try {
         const products = await Product.findAll({
             include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile", "historia"] }
-        });
-
-        if (products.length === 0) {
+        }); if (products.length === 0) {
             return res.status(404).json({
                 success: false,
-                msg: "Nenhum produto encontrado.",
+                message: "Nenhum produto encontrado.",
                 count: 0
             });
         }
@@ -363,14 +311,12 @@ export async function editProduct(req, res) {
                 msg: "Foto do produto é obrigatória.",
                 field: 'image'
             });
-        }
-
-        const product = await Product.findByPk(productId);
+        } const product = await Product.findByPk(productId);
 
         if (!product) {
             return res.status(404).json({
                 success: false,
-                msg: "Produto não encontrado.",
+                message: "Produto não encontrado.",
                 productId: productId
             });
         }
@@ -447,7 +393,7 @@ export async function deleteProduct(req, res) {
         if (!product) {
             return res.status(404).json({
                 success: false,
-                msg: "Produto não encontrado.",
+                message: "Produto não encontrado.",
                 productId: productId
             });
         }
@@ -512,12 +458,10 @@ export async function getAllProductsByUserId(req, res) {
     try {
         const products = await Product.findAll({
             where: { userId },
-        });
-
-        if (!products || products.length === 0) {
+        }); if (!products || products.length === 0) {
             return res.status(404).json({
                 success: false,
-                msg: "Nenhum produto encontrado para este usuário.",
+                message: "Nenhum produto encontrado para este usuário.",
                 userId: userId,
                 count: 0
             });
@@ -558,23 +502,19 @@ export async function getAllProductsByUserId(req, res) {
 export async function getProductById(req, res) {
     const productId = req.params.id;
 
-    if (!productId) {
-        return res.status(400).json({
-            success: false,
-            msg: "ID do produto é obrigatório.",
-            field: 'productId'
-        });
+    // Validate UUID format
+    const validationError = validateUUID(productId, 'ID do produto');
+    if (validationError) {
+        return res.status(400).json(validationError);
     }
 
     try {
         const product = await Product.findByPk(productId, {
             include: { model: User, attributes: ["username", "email", "role", "propertyName", "cityName", "stateName", "phoneNumber", "imageProfile", "historia"] }
-        });
-
-        if (!product) {
+        }); if (!product) {
             return res.status(404).json({
                 success: false,
-                msg: "Produto não encontrado.",
+                message: "Produto não encontrado.",
                 productId: productId
             });
         }

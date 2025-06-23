@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Product from "../models/Product.js";
 import { validate as isUuid } from 'uuid';
+import { validateUUID } from "../utils/validation.js";
 
 export async function register(req, res) {
     try {
@@ -258,12 +259,10 @@ export async function login(req, res) {
 export async function getUser(req, res) {
     const userId = req.params.id;
 
-    if (!userId) {
-        return res.status(400).json({
-            success: false,
-            msg: "ID do usuário é obrigatório.",
-            field: 'userId'
-        });
+    // Validate UUID format
+    const validationError = validateUUID(userId, 'ID do usuário');
+    if (validationError) {
+        return res.status(400).json(validationError);
     }
 
     try {
