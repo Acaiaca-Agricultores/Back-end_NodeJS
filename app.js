@@ -6,11 +6,26 @@ import Routes from "./scr/routes/Routes.js";
 dotenv.config();
 
 const app = express();
-const allowedOrigin = process.env.CORS_ORIGIN;
-app.use(cors({
-  origin: allowedOrigin,
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    const allowedOrigin = process.env.CORS_ORIGIN;
+
+    const normalizedAllowedOrigin = allowedOrigin.replace(/\/$/, '');
+    const normalizedOrigin = origin.replace(/\/$/, '');
+
+    if (normalizedOrigin === normalizedAllowedOrigin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 

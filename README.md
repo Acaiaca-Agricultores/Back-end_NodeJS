@@ -4,7 +4,6 @@ Bem-vindo ao repositório do back-end da API Acaiaca Agricultores! Este projeto 
 
 <img src="img-readme-backend/25500F.png" alt="Logo do Projeto Acaiaca Agricultores">
 
-
 📦 **Repositório:** `Back‑end_NodeJS`
 
 ## 🚀 Sobre
@@ -23,6 +22,57 @@ Este back‑end serve o Front‑end React e pode ser usado também como base par
 - ![Dotenv](https://img.shields.io/badge/Dotenv-ECD53F?style=flat&logo=dotenv&logoColor=black) **Dotenv** – tratamento de variáveis de ambiente.
 - ![CORS](https://img.shields.io/badge/CORS-4B32C3?style=flat&logo=javascript&logoColor=white) **CORS**, ![Helmet](https://img.shields.io/badge/Helmet.js-000000?style=flat&logo=helmet&logoColor=white), ![Body-parser](https://img.shields.io/badge/Body--parser-gray?style=flat&logo=javascript&logoColor=white) – outras dependências úteis para segurança e parsing de dados.
 
+## 🏗️ Arquitetura do Projeto
+
+A aplicação segue uma arquitetura **MVC (Model-View-Controller)**, garantindo organização e separação de responsabilidades:
+
+- **Controllers**: manipulam a lógica das requisições e interações com os modelos.
+- **Models (Sequelize)**: definem os esquemas e relacionamentos com o banco PostgreSQL.
+- **Routes**: controlam os endpoints da API.
+- **Middlewares**: funções intermediárias como autenticação, validação e tratamento de erros.
+- **Services (opcional)**: camada adicional para lógica de negócio reutilizável.
+
+Essa estrutura facilita a manutenção, testes e escalabilidade da aplicação.
+
+---
+
+## 🗂️ Diagrama ER - Banco de Dados
+
+Este é o modelo relacional das principais tabelas do PostgreSQL usado na aplicação:
+
+````dbdiagram
+Table users {
+  id uuid [pk, default: `gen_random_uuid()`]
+  image_profile varchar
+  username varchar [not null]
+  email varchar [not null, unique]
+  password varchar [not null]
+  role enum('agricultor', 'consumidor') [not null]
+  property_name varchar
+  city_name varchar
+}
+
+Table products {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar
+  description text
+  price numeric
+  image_url varchar
+  userId uuid [ref: > users.id]
+}
+
+Table orders {
+  id uuid [pk, default: `gen_random_uuid()`]
+  productId uuid [ref: > products.id]
+  consumerId uuid [ref: > users.id]
+  quantity int
+  status enum('pendente', 'confirmado', 'entregue', 'cancelado')
+  created_at timestamp
+}
+
+<img src="img-readme-backend/db-plataforma-acaiaca.svg" alt="Imagem do diagrama">
+
+
 ## ⚙️ Instalação
 
 ```bash
@@ -36,7 +86,7 @@ cd Back-end_NodeJS
 npm install
 # ou
 yarn install
-```
+````
 
 ## 🛠️ Configuração
 
@@ -61,12 +111,13 @@ A API estará disponível em `http://localhost:<PORT>`.
 ## 📚 Endpoints
 
 **Autenticação**
-| Método | Endpoint        | Função                          |
+| Método | Endpoint | Função |
 |--------|-----------------|----------------------------------|
-| POST   | `/auth/register`| Criar novo usuário/produtor     |
-| POST   | `/auth/login`   | Realizar login e receber token  |
+| POST | `/auth/register`| Criar novo usuário/produtor |
+| POST | `/auth/login` | Realizar login e receber token |
 
 **Produtores**
+
 - `GET /producers` – Listar produtores
 - `GET /producers/:id` – Detalhe de um produtor
 - `POST /producers` – Criar um produtor (autenticado)
@@ -74,6 +125,7 @@ A API estará disponível em `http://localhost:<PORT>`.
 - `DELETE /producers/:id` – Excluir produtor
 
 **Produtos**
+
 - `GET /products` – Listar produtos
 - `GET /products/:id` – Detalhe do produto
 - `POST /products` – Criar produto (autenticado)
@@ -81,6 +133,7 @@ A API estará disponível em `http://localhost:<PORT>`.
 - `DELETE /products/:id` – Deletar produto
 
 **Pedidos**
+
 - `GET /orders` – Listar pedidos (autenticado)
 - `POST /orders` – Criar novo pedido
 - `GET /orders/:id` – Detalhar pedido de um produtor/consumidor
