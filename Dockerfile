@@ -1,13 +1,14 @@
 # Dockerfile para API Node.js
-FROM node:20-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --production
+
+RUN npm ci --only=production
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 10000
 
-CMD ["node", "index.js"]
+CMD ["npm", "start"]

@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: backend-nodejs
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_NAME
+        fromDatabase:
+          name: backend-postgres
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: backend-postgres
+          property: user
+      - key: DB_PASS
+        fromDatabase:
+          name: backend-postgres
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: backend-postgres
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: backend-postgres
+          property: port
+      - key: CORS_ORIGIN
+        value: "*"  # Update this with your frontend URL in production
+
+databases:
+  - name: backend-postgres
+    databaseName: backend_db
+    user: backend_user
+    plan: free 
