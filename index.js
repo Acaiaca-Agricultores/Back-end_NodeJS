@@ -10,7 +10,6 @@ const app = express();
 (async () => {
   try {
     await connectDB();
-    await sequelize.sync();
     console.log('Connected to PostgreSQL and synchronized.');
 
     const corsOptions = {

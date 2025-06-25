@@ -22,6 +22,7 @@ const User = sequelize.define(
     historia: { type: DataTypes.TEXT, allowNull: true },
   },
   {
+    tableName: 'Users',
     timestamps: true,
   }
 );
