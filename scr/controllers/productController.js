@@ -171,7 +171,7 @@ export async function getAllProducts(req, res) {
         }); if (products.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: "Nenhum produto encontrado.",
+                msg: "Nenhum produto encontrado.",
                 count: 0
             });
         }
@@ -316,7 +316,7 @@ export async function editProduct(req, res) {
         if (!product) {
             return res.status(404).json({
                 success: false,
-                message: "Produto não encontrado.",
+                msg: "Produto não encontrado.",
                 productId: productId
             });
         }
@@ -393,7 +393,7 @@ export async function deleteProduct(req, res) {
         if (!product) {
             return res.status(404).json({
                 success: false,
-                message: "Produto não encontrado.",
+                msg: "Produto não encontrado.",
                 productId: productId
             });
         }
@@ -461,7 +461,7 @@ export async function getAllProductsByUserId(req, res) {
         }); if (!products || products.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: "Nenhum produto encontrado para este usuário.",
+                msg: "Nenhum produto encontrado para este usuário.",
                 userId: userId,
                 count: 0
             });
@@ -514,7 +514,7 @@ export async function getProductById(req, res) {
         }); if (!product) {
             return res.status(404).json({
                 success: false,
-                message: "Produto não encontrado.",
+                msg: "Produto não encontrado.",
                 productId: productId
             });
         }
