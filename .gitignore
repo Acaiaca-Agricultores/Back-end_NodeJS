@@ -42,3 +42,49 @@ Thumbs.db
 
 # Docker
 .dockerignore
+.wallet
+
+clean-test-data.js
+
+# Arquivos de lock (opcional - alguns preferem versionar)
+# package-lock.json
+# yarn.lock
+
+# Arquivos de build e distribuição
+dist/
+build/
+
+# Arquivos de cache
+.cache/
+.parcel-cache/
+
+# Arquivos de configuração local
+config/local.js
+config/local.json
+
+# Arquivos de backup
+*.bak
+*.backup
+
+# Arquivos de certificados e chaves
+*.pem
+*.key
+*.crt
+*.p12
+
+# Arquivos de Oracle Wallet (se usar Oracle DB)
+.wallet/
+
+# Arquivos de teste temporários
+test-results/
+test-results.xml
+
+# Arquivos de performance
+*.cpuprofile
+*.heapsnapshot
+
+# Arquivos de debug
+.debug/
+
+# Arquivos de configuração do PM2
+ecosystem.config.js
