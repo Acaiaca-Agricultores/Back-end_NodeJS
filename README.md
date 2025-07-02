@@ -166,7 +166,7 @@ src/
 
 ## 📦 Produção e Deploy
 
-Use um serviço como Heroku, Vercel, Azure ou AWS:
+Use um serviço Render:
 
 ```yaml
 # exemplo: Procfile para Heroku
